@@ -21,7 +21,7 @@ Run every command from `code/`.
 | Path | Content |
 |---|---|
 | `code/shared/` | Model, simulator, least-squares Monte Carlo training, nested and hybrid dual estimators |
-| `code/drivers/` | Drivers for the retrofit instance, the max-call check and the sensitivity sweeps |
+| `code/drivers/` | Drivers for the retrofit instance, the residual-share checks and the transition-intensity sweep |
 | `code/mlmc_maxcall/` | Five-asset Bermudan max-call rows of Table 2 and Section 5.1 |
 | `code/geoasian/` | Geometric-Asian row of Table 2 and its rerun (Section 5.2) |
 | `code/scripts/` | Inner-budget frontier, variance-rate check, comparator audit |
@@ -41,40 +41,44 @@ operators in `shared/` were replaced by `np.dot`, which is the same BLAS call on
 
 | Paper | Command |
 |---|---|
-| Table 2 retrofit gaps 43.5 / 34.2 / 33.1, ρ_res 0.269. Section 6.1 bounds 2.670, 3.553 and 3.829, gaps 32.3 (200 draws) and 38.6 (10 draws) | `CCUS_OUTPUT=../results/headline.csv python3 run_guarded.py drivers/ccus_canonical_headline.py` |
+| Table 2 retrofit row (ρ_res 0.269, gaps 43.5 / 34.2). Section 5.2 stratified gap 33.1. Section 6.1 bounds 2.670, 3.553 and 3.829, gaps 32.3 (200 draws) and 38.6 (10 draws) | `CCUS_OUTPUT=../results/headline.csv python3 run_guarded.py drivers/ccus_canonical_headline.py` |
 | Section 6.1 one-sided 95% limit 2.642 (mean of the ten per-seed `strat50` lower estimates less t(9, 0.95) times their standard error) | computed from the output of the command above |
-| Section 5.2 wall times (23.9 s per seed for the 100-draw nested run, and the two wall-time ratios) | the same driver with `CCUS_WORKERS=1 CCUS_METHODS=plain50,strat50,nested100` |
-| Table 2 max-call row, Section 5.1 bounds 25.40 / 27.56, paired t = 11.95 | `cd mlmc_maxcall && PYTHONPATH=. python3 ../run_guarded.py exp_mlmc_maxcall.py`, then `PYTHONPATH=. python3 ../run_guarded.py exp_mlmc_s2_s3.py` |
+| Section 5.2 retrofit wall times (23.9 s per seed for the 100-draw nested run, stratified hybrid at 70% of it) | the same driver with `CCUS_WORKERS=1 CCUS_METHODS=plain50,strat50,nested100` (shipped output `results/timing_1thread_20260825.csv`) |
+| Table 2 max-call row, Section 5.1 bounds 25.40 / 27.56, Section 5.2 paired t = 11.95 and the plain hybrid at half the nested wall time | `cd mlmc_maxcall && PYTHONPATH=. python3 ../run_guarded.py exp_mlmc_maxcall.py` (writes `mlmc_maxcall/results/`) |
 | Section 4.5 Spearman 0.98 between the residual share and the variance ratio | `RR_OUTPUT=../results/rho.csv python3 run_guarded.py drivers/rho_res_vs_rho_var.py` |
 | Section 4.6 residual variance reduced by a factor of 8 to 80 | `RV_OUTPUT=../results/rv.csv python3 run_guarded.py drivers/residual_variance_check.py` |
-| Section 6.2 transition intensity ±20% | `python3 run_guarded.py drivers/regime_intensity_sensitivity.py` (writes `../out/regime_intensity_sensitivity.csv`) |
-| Section 6.2 regime-dependent drift (+46% and +23% on the lower bound, share moves under 0.006) | `DRIFT_OUTPUT=../results/drift.csv python3 run_guarded.py drivers/ccus_regime_drift.py` |
-| Section 6.1 asymptotic nested gap 29.5% | `python3 scripts/inner_budget_frontier.py` |
+| Section 6.2 transition intensity ±20% (gap within one point, lower bound within 0.5%, share inside (0.12, 0.30)) | `python3 run_guarded.py drivers/regime_intensity_sensitivity.py` (writes `../out/regime_intensity_sensitivity.csv`) |
+| Section 6.1 asymptotic nested gap 29.5% (R² 0.98) | `python3 scripts/inner_budget_frontier.py` (reads `results/nested_inner_sweep_canonical.csv`) |
+| Section 5.1 variance rate (slope −1.05, 95% CI [−1.12, −0.97], R² 0.99) | `python3 scripts/varrate_single_regime_ccus.py` (long run, shipped output `results/varrate_single_regime_ccus.csv`) |
 | Table 2 geometric-Asian row and its rerun | `GEO_OUTPUT=geoasian/results/rerun.csv python3 run_guarded.py geoasian/newfamily_geoasian_tableEC15.py` |
 
+The headline, max-call, Spearman, residual-variance, intensity and frontier commands were
+rerun from this layout on 31 August 2026 and reproduced the numbers listed above.
+
 The geometric-Asian row of Table 2 is carried over from an archived run
-(`code/geoasian/results/geoasian_9point_canonical.csv`). Rerunning the script above at its
-default configuration gives `geoasian_9point_rerun_20260831.csv`. That rerun reproduces the
-archived nested upper estimate to within 1% and returns a hybrid upper estimate 12% lower,
-as reported in Section 5.2. Without `GEO_OUTPUT` the script overwrites the archived file.
+(`code/geoasian/results/geoasian_9point_canonical.csv`). Running the script above at its
+default configuration, the released configuration of Section 5.2, gives
+`geoasian_9point_rerun_20260831.csv`. At σ = 1.5 the rerun reproduces the archived nested upper
+estimate to within 1% and returns a hybrid upper estimate 12% lower. Without `GEO_OUTPUT` the
+script overwrites the archived file.
 
-Several results are shipped as files only:
+Two result files are shipped without a generating script in this repository.
+`results/sigma_p_sweep_canonical.csv` holds the Section 5.3 volatility-level sweep
+(Spearman 1, log–log R² 0.76) and `results/prebudget_routing_settings.csv` its gap ratios
+(1.05 to 1.86 on the calibrated instance). `results/clipping_audit_20260825.csv` comes from
+`scripts/audit_ccus_nested_clipping.py` and is not reported in the paper.
 
-| Paper | File |
-|---|---|
-| Section 5.1 variance rate (slope −1.05, 95% CI [−1.12, −0.97], R² 0.99) | `results/varrate_single_regime_ccus.csv` (from `scripts/varrate_single_regime_ccus.py`) |
-| Section 5.3 volatility-level sweep and the solid curve of Figure 2 | `results/sigma_p_sweep_canonical.csv`, `results/prebudget_routing_settings.csv` |
-| Section 5.3 screened instances on the correct side of the crossing | `results/routing_accuracy_canonical.csv` |
-| Section 6.1 nested inner-budget sweep fitted by the frontier script | `results/nested_inner_sweep_canonical.csv` |
+## Scope
 
-The variance-optimal multilevel schedule allocates outer paths from per-level costs measured
-during the run, so its gap moves slightly between runs and machines (6.97 shipped, 7.00 and
-6.96 on repeat runs). All other rows reproduce exactly.
+This repository holds the code and configuration released with the paper. It does not
+regenerate every number in the text. The following are not produced here: the one- and
+two-dimensional reference checks of Section 5.1, the one-dimensional and two-regime put rows
+of Table 2, the term correlations of Section 4.5, the probe-run checks and the jump family of
+Section 5.3, the matched 50-draw comparator and the basis sweep of Section 5.2, the
+fixed-rule limits of Section 6.1, and the drift and volatility sweeps of Section 6.2.
 
 Inner random streams are assigned by the position of a method in the method list, so runs
 with a different `CCUS_METHODS` list differ in the fifth significant figure.
-`drivers/ccus_regime_sensitivity.py` and `drivers/ccus_regime_drift.py` each rerun their
-unperturbed case as a control, which must reproduce the headline driver.
 
 ## Comparator
 
