@@ -1,0 +1,11 @@
+{
+ "max_gap_shift_pp": 0.743975670807238,
+ "max_VLB_shift_pct": 0.24189937273624285,
+ "seeds": 10,
+ "mults": [
+  0.8,
+  1.0,
+  1.2
+ ],
+ "baseline_bitidentical": true
+}

@@ -1,0 +1,7 @@
+instance,rho_res,gap_hybrid,gap_nested,gap_ratio,routed,truth,correct,source
+5D max-call,0.075,6.7,6.9,0.9710144927536232,cheap,cheap,True,CSV-verified
+1D LS-put ITM,0.072,3.7,4.9,0.7551020408163265,cheap,cheap,True,CSV-verified
+1D two-regime put,0.081,4.7,4.9,0.9591836734693877,cheap,cheap,True,CSV-verified
+1D LS-put ATM,0.147,19.8,20.1,0.9850746268656716,cheap,cheap,True,CSV-verified
+3D CCUS,0.26917681412118694,43.455155916837796,34.20189669210986,1.2705481309421824,escalate,escalate,True,canonical CSV
+geo-Asian sigma=1.5,0.43342269363730884,49.90768133296018,30.104150194851037,1.6578339202378916,escalate,escalate,True,canonical CSV

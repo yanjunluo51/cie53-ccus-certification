@@ -1,0 +1,26 @@
+[
+ {
+  "file": "shared/ccus_nested_ab.py",
+  "replacements": 1,
+  "md5_before": "30e8db39a767a33bee4a26e875aaef6c",
+  "md5_after": "59958d80f0defdcb3720832f9f007d6a"
+ },
+ {
+  "file": "shared/ccus_simulator_correlated.py",
+  "replacements": 1,
+  "md5_before": "68b41a9a23dc2e60f1e667fbccdfdc1c",
+  "md5_after": "f5bee7663f0efa01760297c0d65ddcbf"
+ },
+ {
+  "file": "shared/sample_splitting.py",
+  "replacements": 2,
+  "md5_before": "8f0a09685cbb780fe34108d613bf7566",
+  "md5_after": "3f7e4bad12136d3a74cb5d0384382aea"
+ },
+ {
+  "file": "shared/ccus_core/core/ridge_regression.py",
+  "replacements": 6,
+  "md5_before": "df4e2b51ce315151306a709553264e57",
+  "md5_after": "d644f16a0206c82165f29409400c386e"
+ }
+]
