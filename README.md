@@ -94,5 +94,3 @@ Emissions Allowance settlement prices used to estimate the initial price and σ_
 third-party data and are not redistributed here. The 682 policy documents behind the regime
 index are not redistributed either. `data/pui_regime_labels.csv` gives the quarterly regime
 labels derived from them.
-
-Figure 1 was drawn in draw.io and is not produced by this code.
